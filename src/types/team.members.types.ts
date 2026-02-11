@@ -19,4 +19,5 @@ export interface TeamMemberResponse {
     email: string;
     photo: string;
     localizations: localizations[];
+    sortOrder: number;
 }

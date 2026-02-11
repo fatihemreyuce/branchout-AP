@@ -18,6 +18,7 @@ import {
 	ImageIcon,
 	Layout,
 	Puzzle,
+	FileType,
 } from "lucide-react";
 
 interface NavItem {
@@ -86,6 +87,12 @@ const navigationItems: NavItem[] = [
 		to: "/component-types",
 		label: "Bileşen Tipleri",
 		icon: Layout,
+		end: false,
+	},
+	{
+		to: "/page-types",
+		label: "Sayfa Tipleri",
+		icon: FileType,
 		end: false,
 	},
 ];

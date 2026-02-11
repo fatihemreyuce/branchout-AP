@@ -42,6 +42,10 @@ import ComponentTypesListPage from "./pages/component-types/component-types-list
 import ComponentTypeCreatePage from "./pages/component-types/component-type-create-page";
 import ComponentTypeDetailPage from "./pages/component-types/component-type-detail-page";
 import ComponentTypeEditPage from "./pages/component-types/component-type-edit-page";
+import PageTypesListPage from "./pages/page-types/page-types-list-page";
+import PageTypeCreatePage from "./pages/page-types/page-type-create-page";
+import PageTypeDetailPage from "./pages/page-types/page-type-detail-page";
+import PageTypeEditPage from "./pages/page-types/page-type-edit-page";
 
 function App() {
 	return (
@@ -90,6 +94,10 @@ function App() {
 								<Route path="/component-types/create" element={<ComponentTypeCreatePage />} />
 								<Route path="/component-types/:id" element={<ComponentTypeDetailPage />} />
 								<Route path="/component-types/:id/edit" element={<ComponentTypeEditPage />} />
+								<Route path="/page-types" element={<PageTypesListPage />} />
+								<Route path="/page-types/create" element={<PageTypeCreatePage />} />
+								<Route path="/page-types/:id" element={<PageTypeDetailPage />} />
+								<Route path="/page-types/:id/edit" element={<PageTypeEditPage />} />
 							</Route>
 						</Route>
 					</Routes>

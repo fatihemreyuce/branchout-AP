@@ -467,20 +467,18 @@ export default function ComponentEditPage() {
 								{selectedType && (
 									<div className="space-y-4 rounded-xl border border-border/60 bg-muted/10 p-4">
 										<p className="text-xs text-muted-foreground">Seçilen tipe göre alanlar:</p>
-										{selectedType.hasValue && (
-											<div className="space-y-2">
-												<Label htmlFor="value" className="flex items-center gap-2 text-sm">
-													<Hash className="size-4" />
-													Değer
-												</Label>
-												<Input
-													id="value"
-													value={value}
-													onChange={(e) => setValue(e.target.value)}
-													placeholder="İsteğe bağlı değer"
-												/>
-											</div>
-										)}
+										<div className="space-y-2">
+											<Label htmlFor="value" className="flex items-center gap-2 text-sm">
+												<Hash className="size-4" />
+												Değer (value)
+											</Label>
+											<Input
+												id="value"
+												value={value}
+												onChange={(e) => setValue(e.target.value)}
+												placeholder="Bileşen değeri"
+											/>
+										</div>
 										<div className="space-y-2">
 											<Label htmlFor="link" className="flex items-center gap-2 text-sm">
 												<Link2 className="size-4" />
@@ -875,39 +873,37 @@ export default function ComponentEditPage() {
 														</div>
 													</div>
 												)}
-												{selectedType?.hasDescription !== false && (
-													<div className="space-y-2">
-														<Label className="text-xs font-medium">Açıklama</Label>
-														<div className="flex gap-2">
-															<Textarea
-																value={loc.description}
-																onChange={(e) => updateLocalization(idx, "description", e.target.value)}
-																placeholder="Detaylı açıklama"
-																className="min-h-[80px] resize-none flex-1"
-																rows={3}
-															/>
-															<Button
-																type="button"
-																variant="secondary"
-																size="sm"
-																onClick={() => handleTranslate(idx, "description")}
-																disabled={
-																	!loc.languageCode ||
-																	!loc.description?.trim() ||
-																	translatingIdx === idx
-																}
-																className="gap-1.5 shrink-0 self-start"
-															>
-																{translatingIdx === idx ? (
-																	<Loader2 className="size-4 animate-spin" />
-																) : (
-																	<Languages className="size-4" />
-																)}
-																Çevir
-															</Button>
-														</div>
+												<div className="space-y-2">
+													<Label className="text-xs font-medium">Açıklama (description)</Label>
+													<div className="flex gap-2">
+														<Textarea
+															value={loc.description}
+															onChange={(e) => updateLocalization(idx, "description", e.target.value)}
+															placeholder="Detaylı açıklama"
+															className="min-h-[80px] resize-none flex-1"
+															rows={3}
+														/>
+														<Button
+															type="button"
+															variant="secondary"
+															size="sm"
+															onClick={() => handleTranslate(idx, "description")}
+															disabled={
+																!loc.languageCode ||
+																!loc.description?.trim() ||
+																translatingIdx === idx
+															}
+															className="gap-1.5 shrink-0 self-start"
+														>
+															{translatingIdx === idx ? (
+																<Loader2 className="size-4 animate-spin" />
+															) : (
+																<Languages className="size-4" />
+															)}
+															Çevir
+														</Button>
 													</div>
-												)}
+												</div>
 											</div>
 										</div>
 									))}
