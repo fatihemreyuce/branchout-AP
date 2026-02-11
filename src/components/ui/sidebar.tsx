@@ -11,6 +11,7 @@ import {
 	ChevronRight,
 	Users,
 	Building2,
+	Languages,
 } from "lucide-react";
 
 interface NavItem {
@@ -37,6 +38,12 @@ const navigationItems: NavItem[] = [
 		to: "/offices",
 		label: "Ofisler",
 		icon: Building2,
+		end: false,
+	},
+	{
+		to: "/languages",
+		label: "Diller",
+		icon: Languages,
 		end: false,
 	},
 ];

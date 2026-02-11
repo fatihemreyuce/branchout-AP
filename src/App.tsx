@@ -14,6 +14,10 @@ import OfficesListPage from "./pages/offices/offices-list-page";
 import OfficeCreatePage from "./pages/offices/office-create-page";
 import OfficeEditPage from "./pages/offices/office-edit-page";
 import OfficeDetailPage from "./pages/offices/office-detail-page";
+import LanguagesListPage from "./pages/languages/languages-list-page";
+import LanguageCreatePage from "./pages/languages/language-create-page";
+import LanguageEditPage from "./pages/languages/language-edit-page";
+import LanguageDetailPage from "./pages/languages/language-detail-page";
 
 function App() {
 	return (
@@ -34,6 +38,10 @@ function App() {
 								<Route path="/offices/create" element={<OfficeCreatePage />} />
 								<Route path="/offices/:id" element={<OfficeDetailPage />} />
 								<Route path="/offices/:id/edit" element={<OfficeEditPage />} />
+								<Route path="/languages" element={<LanguagesListPage />} />
+								<Route path="/languages/create" element={<LanguageCreatePage />} />
+								<Route path="/languages/:id" element={<LanguageDetailPage />} />
+								<Route path="/languages/:id/edit" element={<LanguageEditPage />} />
 							</Route>
 						</Route>
 					</Routes>
