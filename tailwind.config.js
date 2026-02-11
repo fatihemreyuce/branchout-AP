@@ -43,6 +43,13 @@ export default {
     			border: 'hsl(var(--border))',
     			input: 'hsl(var(--input))',
     			ring: 'hsl(var(--ring))',
+    			brand: {
+    				DEFAULT: 'hsl(var(--brand))',
+    				foreground: 'hsl(var(--brand-foreground))',
+    				muted: 'hsl(var(--brand-muted))',
+    				ring: 'hsl(var(--brand-ring))',
+    				outline: 'hsl(var(--brand-outline))',
+    			},
     			chart: {
     				'1': 'hsl(var(--chart-1))',
     				'2': 'hsl(var(--chart-2))',

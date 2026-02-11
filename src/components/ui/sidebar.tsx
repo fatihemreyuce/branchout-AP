@@ -12,6 +12,12 @@ import {
 	Users,
 	Building2,
 	Languages,
+	Leaf,
+	Handshake,
+	UserRound,
+	ImageIcon,
+	Layout,
+	Puzzle,
 } from "lucide-react";
 
 interface NavItem {
@@ -46,6 +52,42 @@ const navigationItems: NavItem[] = [
 		icon: Languages,
 		end: false,
 	},
+	{
+		to: "/eco-partners",
+		label: "Eco Partner'lar",
+		icon: Leaf,
+		end: false,
+	},
+	{
+		to: "/partners",
+		label: "Partner'lar",
+		icon: Handshake,
+		end: false,
+	},
+	{
+		to: "/team-members",
+		label: "Ekip Üyeleri",
+		icon: UserRound,
+		end: false,
+	},
+	{
+		to: "/assets",
+		label: "Medyalar",
+		icon: ImageIcon,
+		end: false,
+	},
+	{
+		to: "/components",
+		label: "Bileşenler",
+		icon: Puzzle,
+		end: false,
+	},
+	{
+		to: "/component-types",
+		label: "Bileşen Tipleri",
+		icon: Layout,
+		end: false,
+	},
 ];
 
 export default function Sidebar() {
@@ -77,7 +119,7 @@ export default function Sidebar() {
 					to="/"
 					className="flex items-center gap-2.5 text-foreground no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md min-w-0"
 				>
-					<div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+					<div className="flex size-9 items-center justify-center rounded-lg bg-brand-muted text-brand shrink-0">
 						<Sparkles className="size-4" />
 					</div>
 					<span className="text-base font-semibold tracking-tight truncate">
@@ -99,7 +141,7 @@ export default function Sidebar() {
 							className={({ isActive }) =>
 								`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
 									isActive
-										? "bg-primary text-primary-foreground shadow-sm"
+										? "bg-brand text-brand-foreground shadow-sm"
 										: "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
 								}`
 							}

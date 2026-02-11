@@ -18,9 +18,30 @@ export function objectToFormData<
       ) {
         (value as File[]).forEach((file) => formData.append(key, file));
       } else if (Array.isArray(value)) {
-        // Handle arrays like tagIds
+        // Spring: localizations[0].languageCode, assets[0].asset[0].id vb.
         value.forEach((item, index) => {
-          formData.append(`${key}[${index}]`, String(item));
+          if (item != null && typeof item === "object" && !(item instanceof File)) {
+            Object.entries(item as Record<string, unknown>).forEach(([k, v]) => {
+              if (v != null) {
+                const prefix = `${key}[${index}].${k}`;
+                if (Array.isArray(v)) {
+                  v.forEach((subItem, subIdx) => {
+                    if (subItem != null && typeof subItem === "object" && !(subItem instanceof File)) {
+                      Object.entries(subItem as Record<string, unknown>).forEach(([subK, subV]) => {
+                        if (subV != null && typeof subV !== "object") {
+                          formData.append(`${prefix}[${subIdx}].${subK}`, String(subV));
+                        }
+                      });
+                    }
+                  });
+                } else {
+                  formData.append(prefix, String(v));
+                }
+              }
+            });
+          } else {
+            formData.append(`${key}[${index}]`, String(item));
+          }
         });
       } else if (typeof value === "object") {
         formData.append(key, JSON.stringify(value));

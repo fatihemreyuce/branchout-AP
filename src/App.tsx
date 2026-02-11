@@ -18,6 +18,30 @@ import LanguagesListPage from "./pages/languages/languages-list-page";
 import LanguageCreatePage from "./pages/languages/language-create-page";
 import LanguageEditPage from "./pages/languages/language-edit-page";
 import LanguageDetailPage from "./pages/languages/language-detail-page";
+import EcoPartnersListPage from "./pages/eco-partners/eco-partners-list-page";
+import EcoPartnerCreatePage from "./pages/eco-partners/eco-partner-create-page";
+import EcoPartnerDetailPage from "./pages/eco-partners/eco-partner-detail-page";
+import EcoPartnerEditPage from "./pages/eco-partners/eco-partner-edit-page";
+import PartnersListPage from "./pages/partners/partners-list-page";
+import PartnerCreatePage from "./pages/partners/partner-create-page";
+import PartnerDetailPage from "./pages/partners/partner-detail-page";
+import PartnerEditPage from "./pages/partners/partner-edit-page";
+import TeamMembersListPage from "./pages/team-members/team-members-list-page";
+import TeamMemberCreatePage from "./pages/team-members/team-member-create-page";
+import TeamMemberDetailPage from "./pages/team-members/team-member-detail-page";
+import TeamMemberEditPage from "./pages/team-members/team-member-edit-page";
+import AssetsListPage from "./pages/assets/assets-list-page";
+import AssetCreatePage from "./pages/assets/asset-create-page";
+import AssetDetailPage from "./pages/assets/asset-detail-page";
+import AssetEditPage from "./pages/assets/asset-edit-page";
+import ComponentsListPage from "./pages/components/components-list-page";
+import ComponentCreatePage from "./pages/components/component-create-page";
+import ComponentDetailPage from "./pages/components/component-detail-page";
+import ComponentEditPage from "./pages/components/component-edit-page";
+import ComponentTypesListPage from "./pages/component-types/component-types-list-page";
+import ComponentTypeCreatePage from "./pages/component-types/component-type-create-page";
+import ComponentTypeDetailPage from "./pages/component-types/component-type-detail-page";
+import ComponentTypeEditPage from "./pages/component-types/component-type-edit-page";
 
 function App() {
 	return (
@@ -42,6 +66,30 @@ function App() {
 								<Route path="/languages/create" element={<LanguageCreatePage />} />
 								<Route path="/languages/:id" element={<LanguageDetailPage />} />
 								<Route path="/languages/:id/edit" element={<LanguageEditPage />} />
+								<Route path="/eco-partners" element={<EcoPartnersListPage />} />
+								<Route path="/eco-partners/create" element={<EcoPartnerCreatePage />} />
+								<Route path="/eco-partners/:id" element={<EcoPartnerDetailPage />} />
+								<Route path="/eco-partners/:id/edit" element={<EcoPartnerEditPage />} />
+								<Route path="/partners" element={<PartnersListPage />} />
+								<Route path="/partners/create" element={<PartnerCreatePage />} />
+								<Route path="/partners/:id" element={<PartnerDetailPage />} />
+								<Route path="/partners/:id/edit" element={<PartnerEditPage />} />
+								<Route path="/team-members" element={<TeamMembersListPage />} />
+								<Route path="/team-members/create" element={<TeamMemberCreatePage />} />
+								<Route path="/team-members/:id" element={<TeamMemberDetailPage />} />
+								<Route path="/team-members/:id/edit" element={<TeamMemberEditPage />} />
+								<Route path="/assets" element={<AssetsListPage />} />
+								<Route path="/assets/create" element={<AssetCreatePage />} />
+								<Route path="/assets/:id" element={<AssetDetailPage />} />
+								<Route path="/assets/:id/edit" element={<AssetEditPage />} />
+								<Route path="/components" element={<ComponentsListPage />} />
+								<Route path="/components/create" element={<ComponentCreatePage />} />
+								<Route path="/components/:id" element={<ComponentDetailPage />} />
+								<Route path="/components/:id/edit" element={<ComponentEditPage />} />
+								<Route path="/component-types" element={<ComponentTypesListPage />} />
+								<Route path="/component-types/create" element={<ComponentTypeCreatePage />} />
+								<Route path="/component-types/:id" element={<ComponentTypeDetailPage />} />
+								<Route path="/component-types/:id/edit" element={<ComponentTypeEditPage />} />
 							</Route>
 						</Route>
 					</Routes>

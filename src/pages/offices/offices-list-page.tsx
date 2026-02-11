@@ -115,8 +115,10 @@ export default function OfficesListPage() {
 	const setPageInUrl = (newPage: number) =>
 		setSearchParams((prev) => updateSearchParams(prev, { page: newPage }));
 
-	const totalPages = data?.totalPages ?? 0;
-	const totalElements = data?.totalElements ?? 0;
+	// API bazen snake_case (total_elements, total_pages) döndürebilir; her iki biçimi okuyoruz
+	const raw = data as Record<string, unknown> | undefined;
+	const totalElements = raw ? Number(raw.totalElements ?? raw.total_elements ?? (Array.isArray(raw.content) ? raw.content.length : 0)) : 0;
+	const totalPages = raw ? Number(raw.totalPages ?? raw.total_pages ?? 1) : 0;
 	const content = data?.content ?? [];
 	const hasNext = page < totalPages - 1;
 	const hasPrev = page > 0;
@@ -126,14 +128,14 @@ export default function OfficesListPage() {
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-						<Building2 className="size-6" />
+						<Building2 className="size-6 text-brand" />
 						Ofisler
 					</h1>
 					<p className="text-muted-foreground text-sm mt-1">
 						Tüm ofisleri listele, oluştur ve yönet
 					</p>
 				</div>
-				<Button asChild>
+				<Button asChild className="gap-2 bg-brand text-brand-foreground hover:bg-brand/90">
 					<Link to="/offices/create" className="gap-2">
 						<Building className="size-4" />
 						Yeni Ofis

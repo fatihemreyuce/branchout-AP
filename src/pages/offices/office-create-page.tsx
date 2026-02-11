@@ -38,7 +38,7 @@ export default function OfficeCreatePage() {
 						</Link>
 					</Button>
 					<div className="flex items-center gap-3 min-w-0">
-						<div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
+						<div className="flex size-12 items-center justify-center rounded-xl bg-brand-muted text-brand shrink-0">
 							<Building className="size-6" />
 						</div>
 						<div className="min-w-0">
@@ -117,7 +117,7 @@ export default function OfficeCreatePage() {
 							</div>
 						</div>
 						<div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border/60">
-							<Button type="submit" disabled={createOffice.isPending} className="gap-2">
+							<Button type="submit" disabled={createOffice.isPending} className="gap-2 bg-brand text-brand-foreground hover:bg-brand/90">
 								{createOffice.isPending ? (
 									<Loader2 className="size-4 animate-spin" />
 								) : (

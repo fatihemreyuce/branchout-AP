@@ -85,7 +85,7 @@ export default function UserDetailPage() {
 						</Link>
 					</Button>
 					<div className="flex items-center gap-4 min-w-0">
-						<div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary shrink-0 ring-2 ring-primary/20">
+						<div className="flex size-14 items-center justify-center rounded-2xl bg-brand-muted text-brand shrink-0 ring-2 ring-brand-ring">
 							<User className="size-7" />
 						</div>
 						<div className="min-w-0">
@@ -98,7 +98,7 @@ export default function UserDetailPage() {
 						</div>
 					</div>
 				</div>
-				<Button asChild className="gap-2 shrink-0">
+				<Button asChild className="gap-2 shrink-0 bg-brand text-brand-foreground hover:bg-brand/90">
 					<Link to={`/users/${user.id}/edit`}>
 						<Pencil className="size-4" />
 						Düzenle
@@ -117,7 +117,7 @@ export default function UserDetailPage() {
 					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 						{/* Kullanıcı adı */}
 						<div className="flex items-start gap-4 rounded-lg border border-border/60 bg-card p-4">
-							<div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
+							<div className="flex size-11 items-center justify-center rounded-xl bg-brand-muted text-brand shrink-0">
 								<AtSign className="size-5" />
 							</div>
 							<div className="min-w-0 flex-1">
@@ -130,7 +130,7 @@ export default function UserDetailPage() {
 
 						{/* E-posta */}
 						<div className="flex items-start gap-4 rounded-lg border border-border/60 bg-card p-4">
-							<div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
+							<div className="flex size-11 items-center justify-center rounded-xl bg-brand-muted text-brand shrink-0">
 								<Mail className="size-5" />
 							</div>
 							<div className="min-w-0 flex-1">

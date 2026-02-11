@@ -64,7 +64,7 @@ export default function LanguageDetailPage() {
 						</Link>
 					</Button>
 					<div className="flex items-center gap-4 min-w-0">
-						<div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary shrink-0 ring-2 ring-primary/20">
+						<div className="flex size-14 items-center justify-center rounded-2xl bg-brand-muted text-brand shrink-0 ring-2 ring-brand-ring">
 							<Languages className="size-7" />
 						</div>
 						<div className="min-w-0">
@@ -77,7 +77,7 @@ export default function LanguageDetailPage() {
 						</div>
 					</div>
 				</div>
-				<Button asChild className="gap-2 shrink-0">
+				<Button asChild className="gap-2 shrink-0 bg-brand text-brand-foreground hover:bg-brand/90">
 					<Link to={`/languages/${language.id}/edit`}>
 						<Pencil className="size-4" />
 						Düzenle
@@ -93,7 +93,7 @@ export default function LanguageDetailPage() {
 				<CardContent className="p-6">
 					<div className="grid gap-6 sm:grid-cols-2">
 						<div className="flex items-start gap-4 rounded-lg border border-border/60 bg-card p-4">
-							<div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
+							<div className="flex size-11 items-center justify-center rounded-xl bg-brand-muted text-brand shrink-0">
 								<Code className="size-5" />
 							</div>
 							<div className="min-w-0 flex-1">

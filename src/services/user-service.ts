@@ -2,7 +2,6 @@ import { fetchClient } from "@/utils/fetch-client";
 import type { UserRequest, UserResponse } from "@/types/user.types";
 import type { Page } from "@/types/pagination.types";
 
-
 export const getUsers = (search: string, page: number, size: number, sort: string): Promise<Page<UserResponse>> => {
     return fetchClient<void, Page<UserResponse>>(`/admin/users?search=${search}&page=${page}&size=${size}&sort=${sort}`, {
         method: "GET",
