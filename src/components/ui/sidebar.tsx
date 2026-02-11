@@ -1,8 +1,17 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { BorderBeam } from "@/components/ui/border-beam";
 import DarkModeToggle from "@/components/dark-mode-toggle";
 import { useLoginState } from "@/hooks/use-login-state";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import {
+	LayoutDashboard,
+	LogOut,
+	Sparkles,
+	ChevronRight,
+	Users,
+	Building2,
+} from "lucide-react";
 
 interface NavItem {
 	to: string;
@@ -18,7 +27,18 @@ const navigationItems: NavItem[] = [
 		icon: LayoutDashboard,
 		end: true,
 	},
-	// add more navigation items here
+	{
+		to: "/users",
+		label: "Kullanıcılar",
+		icon: Users,
+		end: false,
+	},
+	{
+		to: "/offices",
+		label: "Ofisler",
+		icon: Building2,
+		end: false,
+	},
 ];
 
 export default function Sidebar() {
@@ -35,17 +55,33 @@ export default function Sidebar() {
 	};
 
 	return (
-		<aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
-			{/* Header */}
-			<div className="flex h-16 items-center justify-between px-6 border-b">
-				<div className="flex items-center gap-2">
-					
-					<span className="text-lg font-semibold italic">Your App Name</span>
-				</div>
+		<aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-border/60 bg-card/95 shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-card/80">
+			{/* Header with subtle accent */}
+			<div className="relative flex h-16 shrink-0 items-center justify-between gap-3 px-5 border-b border-border/60">
+				<BorderBeam
+					size={40}
+					duration={12}
+					colorFrom="hsl(var(--muted-foreground) / 0.3)"
+					colorTo="hsl(var(--foreground) / 0.15)"
+					borderWidth={1}
+					className="opacity-80"
+				/>
+				<NavLink
+					to="/"
+					className="flex items-center gap-2.5 text-foreground no-underline outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md min-w-0"
+				>
+					<div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+						<Sparkles className="size-4" />
+					</div>
+					<span className="text-base font-semibold tracking-tight truncate">
+						Branchout
+					</span>
+				</NavLink>
+				<DarkModeToggle variant="button" compact />
 			</div>
 
 			{/* Navigation */}
-			<nav className="flex flex-col gap-2 p-4">
+			<nav className="flex flex-1 flex-col gap-1 p-3 overflow-y-auto">
 				{navigationItems.map((item) => {
 					const Icon = item.icon;
 					return (
@@ -54,37 +90,37 @@ export default function Sidebar() {
 							to={item.to}
 							end={item.end}
 							className={({ isActive }) =>
-								`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+								`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
 									isActive
 										? "bg-primary text-primary-foreground shadow-sm"
 										: "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
 								}`
 							}
 						>
-							<Icon className="h-4 w-4" />
-							{item.label}
+							<Icon className="size-4 shrink-0" />
+							<span className="flex-1 truncate">{item.label}</span>
+							<ChevronRight
+								className="size-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-60"
+								aria-hidden
+							/>
 						</NavLink>
 					);
 				})}
 			</nav>
 
-			{/* Footer with dark mode toggle and logout */}
-			<div className="absolute bottom-0 left-0 right-0 p-4 border-t space-y-3">
-				{/* Dark Mode Toggle */}
-				<div className="flex items-center justify-between px-2">
-					<span className="text-sm text-muted-foreground">Theme</span>
-					<DarkModeToggle />
-				</div>
-				
-				{/* Logout Button */}
+			{/* Footer */}
+			<div className="shrink-0 border-t border-border/60 p-3 space-y-3">
+				<Separator className="sr-only" />
+				{/* Logout */}
 				<Button
 					variant="outline"
+					size="sm"
 					onClick={handleLogout}
 					disabled={!isActionable || isLoading}
-					className="w-full justify-start gap-3"
+					className="w-full justify-start gap-3 rounded-lg border-border/80 font-medium"
 					aria-busy={isLoading}
 				>
-					<LogOut className="h-4 w-4" />
+					<LogOut className="size-4 shrink-0" />
 					{isLoading ? "Logging out..." : "Logout"}
 				</Button>
 			</div>

@@ -1,18 +1,29 @@
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 
 interface DarkModeToggleProps {
 	className?: string;
+	showIcons?: boolean;
+	/** Button variant: full-width theme button for sidebar footer/header */
+	variant?: "switch" | "button";
+	/** Compact style for header (no full width) */
+	compact?: boolean;
 }
 
-export default function DarkModeToggle({ className }: DarkModeToggleProps) {
+export default function DarkModeToggle({
+	className,
+	showIcons = true,
+	variant = "switch",
+	compact = false,
+}: DarkModeToggleProps) {
 	const [isDark, setIsDark] = useState(() => {
 		const stored = localStorage.getItem("theme");
 		return stored === "dark";
 	});
 
 	useEffect(() => {
-		// migrate legacy darkMode flag if present
 		const legacyDark = localStorage.getItem("darkMode");
 		const stored = localStorage.getItem("theme");
 		let initialTheme = stored || "light";
@@ -23,49 +34,66 @@ export default function DarkModeToggle({ className }: DarkModeToggleProps) {
 				localStorage.setItem("theme", initialTheme);
 				localStorage.removeItem("darkMode");
 			} catch {
-				// Ignore parsing errors
+				// ignore
 			}
 		}
 		setIsDark(initialTheme === "dark");
 	}, []);
 
 	useEffect(() => {
-		const rootElement = document.documentElement;
-		rootElement.classList.remove("dark");
+		const root = document.documentElement;
+		root.classList.remove("dark");
 		if (isDark) {
-			rootElement.classList.add("dark");
+			root.classList.add("dark");
 			localStorage.setItem("theme", "dark");
 		} else {
 			localStorage.setItem("theme", "light");
 		}
 	}, [isDark]);
 
-	const toggleTheme = () => {
-		setIsDark(!isDark);
-	};
+	if (variant === "button") {
+		// Tek ikon: dark modda ay, light modda güneş (mevcut tema)
+		return (
+			<Button
+				variant="outline"
+				size="sm"
+				onClick={() => setIsDark((prev) => !prev)}
+				className={
+					compact
+						? `w-auto shrink-0 justify-center gap-2 rounded-lg border-border/80 font-medium px-3 ${className ?? ""}`
+						: `w-full justify-start gap-3 rounded-lg border-border/80 font-medium ${className ?? ""}`
+				}
+				aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+			>
+				{isDark ? (
+					<Moon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+				) : (
+					<Sun className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+				)}
+			</Button>
+		);
+	}
 
 	return (
-		<button
-			onClick={toggleTheme}
-			className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
-				isDark ? "bg-primary" : "bg-muted"
-			} ${className || ""}`}
-			aria-label="Toggle dark mode"
-		>
-			{/* Icons */}
-			<div className="absolute left-1 flex items-center justify-center">
-				<Sun className="h-3 w-3 text-muted-foreground" />
-			</div>
-			<div className="absolute right-1 flex items-center justify-center">
-				<Moon className="h-3 w-3 text-muted-foreground" />
-			</div>
-			
-			{/* Slider */}
-			<span
-				className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform duration-200 ease-in-out ${
-					isDark ? "translate-x-6" : "translate-x-1"
-				}`}
-			/>
-		</button>
+		<div className={className}>
+			{showIcons && (
+				<div className="flex items-center gap-2">
+					<Sun className="size-4 text-muted-foreground shrink-0" aria-hidden />
+					<Switch
+						checked={isDark}
+						onCheckedChange={setIsDark}
+						aria-label="Toggle dark mode"
+					/>
+					<Moon className="size-4 text-muted-foreground shrink-0" aria-hidden />
+				</div>
+			)}
+			{!showIcons && (
+				<Switch
+					checked={isDark}
+					onCheckedChange={setIsDark}
+					aria-label="Toggle dark mode"
+				/>
+			)}
+		</div>
 	);
 }
