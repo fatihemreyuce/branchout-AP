@@ -19,6 +19,7 @@ import {
 	Layout,
 	Puzzle,
 	FileType,
+	FileText,
 } from "lucide-react";
 
 interface NavItem {
@@ -93,6 +94,12 @@ const navigationItems: NavItem[] = [
 		to: "/page-types",
 		label: "Sayfa Tipleri",
 		icon: FileType,
+		end: false,
+	},
+	{
+		to: "/pages",
+		label: "Sayfalar",
+		icon: FileText,
 		end: false,
 	},
 ];
