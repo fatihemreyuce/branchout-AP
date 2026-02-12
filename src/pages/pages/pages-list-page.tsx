@@ -334,11 +334,11 @@ export default function PagesListPage() {
 				title="Sayfayı sil"
 				description={
 					deleteTarget
-						? `ID ${deleteTarget.id} sayfayı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`
+						? `"${deleteTarget.name || `Sayfa #${deleteTarget.id}`}" sayfasını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`
 						: undefined
 				}
-				confirmValue={deleteTarget ? String(deleteTarget.id) : undefined}
-				confirmLabel="Silmek için ID'yi yazın"
+				confirmValue={deleteTarget?.name?.trim() || (deleteTarget ? `Sayfa #${deleteTarget.id}` : undefined)}
+				confirmLabel="Silmek için sayfa adını yazın"
 				confirmText="Sil"
 				cancelText="Vazgeç"
 				onConfirm={handleDelete}

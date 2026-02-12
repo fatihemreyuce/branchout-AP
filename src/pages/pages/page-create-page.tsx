@@ -16,6 +16,7 @@ import {
 import { translateFromTurkish } from "@/utils/translate";
 import { useCreatePage, useAddComponentToPage, useAddTeamMemberToPage } from "@/hooks/use-page";
 import { usePageTypes } from "@/hooks/use-page-type";
+import { useComponentTypes } from "@/hooks/use-component-type";
 import { useComponents } from "@/hooks/use-components";
 import { useTeamMembers } from "@/hooks/use-team-members";
 import { useLanguages } from "@/hooks/use-languages";
@@ -45,7 +46,40 @@ import type {
 	imageAssetLocalizations,
 } from "@/types/page.types";
 import type { ComponentResponse } from "@/types/components.types";
+import type { ComponentTypeResponse } from "@/types/components.type.types";
 import type { TeamMemberResponse } from "@/types/team.members.types";
+
+/** API'den gelen bileşen listesini normalize eder; tip adı (type.type) her zaman dolu olur. */
+function normalizeComponentFromList(x: unknown): ComponentResponse {
+	const item = typeof x === "object" && x !== null ? (x as Record<string, unknown>) : {};
+	const typeVal = item.type;
+	const isTypeObject = typeVal != null && typeof typeVal === "object" && !Array.isArray(typeVal);
+	const typeObj = isTypeObject ? (typeVal as Record<string, unknown>) : {};
+	const typeId = Number(item.typeId ?? item.type_id ?? typeObj?.id ?? typeObj?.Id ?? 0);
+	const typeName = typeof typeVal === "string" ? typeVal : String(typeObj.type ?? typeObj.Type ?? "");
+	const typeForDisplay: ComponentTypeResponse = {
+		id: typeId,
+		type: typeName,
+		hasTitle: false,
+		hasExcerpt: false,
+		hasDescription: false,
+		hasImage: false,
+		hasValue: false,
+		hasAsset: false,
+		photo: "",
+		hasLink: false,
+	};
+	return {
+		id: Number(item.id ?? item.Id ?? 0),
+		name: String(item.name ?? item.Name ?? ""),
+		typeId: typeId || 0,
+		type: typeForDisplay,
+		value: String(item.value ?? item.Value ?? ""),
+		link: String(item.link ?? item.Link ?? ""),
+		localizations: Array.isArray(item.localizations) ? (item.localizations as ComponentResponse["localizations"]) : [],
+		assets: Array.isArray(item.assets) ? (item.assets as ComponentResponse["assets"]) : [],
+	};
+}
 
 const STEPS = [
 	{ id: 1, label: "Sayfa Belirle", icon: FileText },
@@ -100,6 +134,7 @@ export default function PageCreatePage() {
 	const addTeamMemberToPage = useAddTeamMemberToPage();
 
 	const { data: typesData } = usePageTypes("", 0, 100, "type,asc");
+	const { data: componentTypesData } = useComponentTypes("", 0, 100, "type,asc");
 	const { data: componentsData } = useComponents("", 0, 100, "id,asc");
 	const { data: teamMembersData } = useTeamMembers("", 0, 100, "id,asc");
 	const { data: languagesData } = useLanguages(0, 100, "id,asc");
@@ -113,11 +148,29 @@ export default function PageCreatePage() {
 		})) : [];
 	}, [typesData]);
 
+	const componentTypesList = useMemo(() => {
+		const raw = componentTypesData as Record<string, unknown> | undefined;
+		const arr = raw?.content ?? raw?.data ?? [];
+		if (!Array.isArray(arr)) return [];
+		return arr.map((t: Record<string, unknown>) => ({
+			id: Number(t.id ?? t.Id ?? 0),
+			type: String(t.type ?? t.Type ?? ""),
+		}));
+	}, [componentTypesData]);
+
 	const components = useMemo(() => {
 		const raw = componentsData as Record<string, unknown> | undefined;
 		const arr = raw?.content ?? raw?.data ?? [];
-		return Array.isArray(arr) ? (arr as ComponentResponse[]) : [];
-	}, [componentsData]);
+		if (!Array.isArray(arr)) return [];
+		return arr.map((x: unknown) => {
+			const c = normalizeComponentFromList(x);
+			if (!c.type?.type && c.typeId && componentTypesList.length > 0) {
+				const typeName = componentTypesList.find((t) => t.id === c.typeId)?.type ?? "";
+				if (typeName) c.type = { ...c.type, type: typeName };
+			}
+			return c;
+		});
+	}, [componentsData, componentTypesList]);
 
 	const teamMembers = useMemo(() => {
 		const raw = teamMembersData as Record<string, unknown> | undefined;

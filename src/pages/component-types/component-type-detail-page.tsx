@@ -37,7 +37,8 @@ function normalizeComponentType(data: unknown): ComponentTypeResponse {
 		hasValue: Boolean(item.hasValue ?? item.has_value ?? false),
 		hasAsset: Boolean(item.hasAsset ?? item.has_asset ?? item.hasAssets ?? false),
 		photo: String(item.photo ?? item.Photo ?? ""),
-		hasKind: Boolean(item.hasKind ?? item.has_kind ?? false),
+		hasLink: Boolean(item.hasLink ?? item.has_link ?? item.hasKind ?? item.has_kind ?? false),
+		link: item.link != null ? String(item.link) : (item.Link != null ? String(item.Link) : (item.kind != null ? String(item.kind) : item.Kind != null ? String(item.Kind) : undefined)),
 	};
 }
 
@@ -48,7 +49,7 @@ const FEATURE_CONFIG: Record<string, { label: string; style: string }> = {
 	hasImage: { label: "Görsel", style: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" },
 	hasValue: { label: "Değer", style: "border-cyan-500/30 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400" },
 	hasAsset: { label: "Medya", style: "border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-400" },
-	hasKind: { label: "Tür", style: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400" },
+	hasLink: { label: "Link", style: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400" },
 };
 
 export default function ComponentTypeDetailPage() {
@@ -164,7 +165,7 @@ export default function ComponentTypeDetailPage() {
 						<div className="space-y-3">
 							<p className="text-sm font-medium text-muted-foreground">Alanlar</p>
 							<div className="grid gap-2 sm:grid-cols-2">
-								{(["hasTitle", "hasExcerpt", "hasDescription", "hasImage", "hasValue", "hasAsset", "hasKind"] as const).map((key) => (
+								{(["hasTitle", "hasExcerpt", "hasDescription", "hasImage", "hasValue", "hasAsset", "hasLink"] as const).map((key) => (
 									<div
 										key={key}
 										className="flex items-center justify-between rounded-lg border border-border/60 px-4 py-3"
@@ -185,6 +186,19 @@ export default function ComponentTypeDetailPage() {
 								))}
 							</div>
 						</div>
+						{ct.hasLink && ct.link && (
+							<div className="rounded-lg border border-border/60 bg-muted/20 p-4 mt-4">
+								<p className="text-sm font-medium text-muted-foreground mb-1">Link</p>
+								<a
+									href={ct.link}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-sm font-medium text-brand hover:underline break-all"
+								>
+									{ct.link}
+								</a>
+							</div>
+						)}
 					</CardContent>
 				</Card>
 			</div>

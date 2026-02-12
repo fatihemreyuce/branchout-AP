@@ -13,7 +13,8 @@ function requestToFormBody(req: ComponentTypeRequest): Record<string, unknown> {
 		has_value: req.hasValue,
 		has_asset: req.hasAsset,
 		hasAssets: req.hasAsset,
-		has_kind: req.hasKind,
+		has_kind: req.hasLink,
+		...(req.link != null && { kind: req.link }),
 	};
 }
 

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { translateFromTurkish } from "@/utils/translate";
 import { useCreateComponent } from "@/hooks/use-components";
-import { useComponentTypes } from "@/hooks/use-component-type";
+import { useComponentTypes, useComponentTypeById } from "@/hooks/use-component-type";
 import { useAssets } from "@/hooks/use-assets";
 import { useLanguages } from "@/hooks/use-languages";
 import { Button } from "@/components/ui/button";
@@ -74,17 +74,20 @@ export default function ComponentCreatePage() {
 
 	const { data: typesData, isLoading: typesLoading } = useComponentTypes("", 0, 100, "type,asc");
 
+	const [name, setName] = useState("");
+	const [typeId, setTypeId] = useState<number | "">("");
+	const [value, setValue] = useState("");
+	const [link, setLink] = useState("");
+
+	const selectedTypeId = typeId !== "" && Number(typeId) > 0 ? Number(typeId) : 0;
+	const { data: selectedTypeDetail } = useComponentTypeById(selectedTypeId);
+
 	// Bileşen tipi listesini sayfa açıldığında tazele (Medya alanı güncel görünsün)
 	useEffect(() => {
 		queryClient.invalidateQueries({ queryKey: ["component-types"] });
 	}, [queryClient]);
 	const { data: assetsData } = useAssets("", 0, 100, "id,asc");
 	const { data: languagesData } = useLanguages(0, 100, "id,asc");
-
-	const [name, setName] = useState("");
-	const [typeId, setTypeId] = useState<number | "">("");
-	const [value, setValue] = useState("");
-	const [link, setLink] = useState("");
 	const [selectedAssetIds, setSelectedAssetIds] = useState<Set<number>>(new Set());
 	const [localizations, setLocalizations] = useState<localizations[]>([]);
 	const [translatingIdx, setTranslatingIdx] = useState<number | null>(null);
@@ -120,7 +123,8 @@ export default function ComponentCreatePage() {
 			hasImage: Boolean(x.hasImage ?? x.has_image ?? false),
 			hasValue: Boolean(x.hasValue ?? x.has_value ?? false),
 			hasAsset: Boolean(x.hasAsset ?? x.has_asset ?? x.hasAssets ?? false),
-			hasKind: Boolean(x.hasKind ?? x.has_kind ?? false),
+			hasLink: Boolean(x.hasLink ?? x.has_link ?? x.hasKind ?? x.has_kind ?? false),
+			link: String(x.link ?? x.Link ?? x.kind ?? x.Kind ?? ""),
 		}));
 	}, [typesData]);
 
@@ -128,6 +132,23 @@ export default function ComponentCreatePage() {
 		() => componentTypes.find((ct) => ct.id === typeId),
 		[componentTypes, typeId]
 	);
+
+	// Seçilen bileşen tipinin link değerini detay API'sinden çekip Link alanına yaz (liste API'si link döndürmeyebilir)
+	const typeLinkFromDetail = useMemo(() => {
+		if (!selectedTypeDetail || typeof selectedTypeDetail !== "object") return "";
+		const t = selectedTypeDetail as Record<string, unknown>;
+		return String(t.link ?? t.Link ?? t.kind ?? t.Kind ?? "").trim();
+	}, [selectedTypeDetail]);
+	const typeHasLinkFromDetail = useMemo(() => {
+		if (!selectedTypeDetail || typeof selectedTypeDetail !== "object") return false;
+		const t = selectedTypeDetail as Record<string, unknown>;
+		return Boolean(t.hasLink ?? t.has_link ?? t.hasKind ?? t.has_kind ?? false);
+	}, [selectedTypeDetail]);
+	useEffect(() => {
+		if (!selectedType) return;
+		if (typeHasLinkFromDetail) setLink(typeLinkFromDetail);
+		else if (!selectedType.hasLink) setLink("");
+	}, [selectedType?.id, selectedType?.hasLink, typeHasLinkFromDetail, typeLinkFromDetail]);
 
 	const assetsList = useMemo(() => normalizeAssetsList(assetsData), [assetsData]);
 
@@ -301,31 +322,35 @@ export default function ComponentCreatePage() {
 								{selectedType && (
 									<div className="space-y-4 rounded-xl border border-border/60 bg-muted/10 p-4">
 										<p className="text-xs text-muted-foreground">Seçilen tipe göre alanlar:</p>
-										<div className="space-y-2">
-											<Label htmlFor="value" className="flex items-center gap-2 text-sm">
-												<Hash className="size-4" />
-												Değer (value)
-											</Label>
-											<Input
-												id="value"
-												value={value}
-												onChange={(e) => setValue(e.target.value)}
-												placeholder="Bileşen değeri"
-											/>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="link" className="flex items-center gap-2 text-sm">
-												<Link2 className="size-4" />
-												Link
-											</Label>
-											<Input
-												id="link"
-												type="url"
-												value={link}
-												onChange={(e) => setLink(e.target.value)}
-												placeholder="https://..."
-											/>
-										</div>
+										{selectedType.hasValue && (
+											<div className="space-y-2">
+												<Label htmlFor="value" className="flex items-center gap-2 text-sm">
+													<Hash className="size-4" />
+													Değer (value)
+												</Label>
+												<Input
+													id="value"
+													value={value}
+													onChange={(e) => setValue(e.target.value)}
+													placeholder="Bileşen değeri"
+												/>
+											</div>
+										)}
+										{selectedType.hasLink && (
+											<div className="space-y-2">
+												<Label htmlFor="link" className="flex items-center gap-2 text-sm">
+													<Link2 className="size-4" />
+													Link
+												</Label>
+												<Input
+													id="link"
+													type="url"
+													value={link}
+													onChange={(e) => setLink(e.target.value)}
+													placeholder="https://..."
+												/>
+											</div>
+										)}
 									</div>
 								)}
 							</div>

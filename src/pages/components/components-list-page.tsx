@@ -101,7 +101,7 @@ function normalizeItem(x: unknown): ComponentResponse {
 			hasValue: Boolean(typeObj.hasValue ?? typeObj.has_value ?? false),
 			hasAsset: Boolean(typeObj.hasAsset ?? typeObj.has_asset ?? typeObj.hasAssets ?? false),
 			photo: String(typeObj.photo ?? typeObj.Photo ?? ""),
-			hasKind: Boolean(typeObj.hasKind ?? typeObj.has_kind ?? false),
+			hasLink: Boolean(typeObj.hasLink ?? typeObj.has_link ?? typeObj.hasKind ?? typeObj.has_kind ?? false),
 		},
 		value: item.value != null && item.value !== "" ? String(item.value) : String(item.Value ?? ""),
 		link: String(item.link ?? item.Link ?? ""),

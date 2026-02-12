@@ -70,7 +70,7 @@ function normalizeComponent(data: unknown): ComponentResponse | null {
 			hasValue: Boolean(typeObj.hasValue ?? typeObj.has_value ?? false),
 			hasAsset: Boolean(typeObj.hasAsset ?? typeObj.has_asset ?? typeObj.hasAssets ?? false),
 			photo: String(typeObj.photo ?? typeObj.Photo ?? ""),
-			hasKind: Boolean(typeObj.hasKind ?? typeObj.has_kind ?? false),
+			hasLink: Boolean(typeObj.hasLink ?? typeObj.has_link ?? typeObj.hasKind ?? typeObj.has_kind ?? false),
 		},
 		value: item.value != null && item.value !== "" ? String(item.value) : String(item.Value ?? ""),
 		link: String(item.link ?? item.Link ?? ""),
@@ -146,7 +146,7 @@ const FEATURE_CONFIG: Record<string, { label: string; style: string }> = {
 	hasImage: { label: "Görsel", style: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" },
 	hasValue: { label: "Değer", style: "border-cyan-500/30 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400" },
 	hasAsset: { label: "Medya", style: "border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-400" },
-	hasKind: { label: "Tür", style: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400" },
+	hasLink: { label: "Link", style: "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400" },
 };
 
 export default function ComponentDetailPage() {
@@ -177,7 +177,7 @@ export default function ComponentDetailPage() {
 				hasImage: Boolean(typeFromApi.hasImage ?? typeFromApi.has_image ?? false),
 				hasValue: Boolean(typeFromApi.hasValue ?? typeFromApi.has_value ?? false),
 				hasAsset: Boolean(typeFromApi.hasAsset ?? typeFromApi.has_asset ?? typeFromApi.hasAssets ?? false),
-				hasKind: Boolean(typeFromApi.hasKind ?? typeFromApi.has_kind ?? false),
+				hasLink: Boolean(typeFromApi.hasLink ?? typeFromApi.has_link ?? typeFromApi.hasKind ?? typeFromApi.has_kind ?? false),
 			}
 		: comp?.type;
 
@@ -358,7 +358,7 @@ export default function ComponentDetailPage() {
 							</p>
 						)}
 						<div className="flex flex-wrap gap-2">
-							{(["hasTitle", "hasExcerpt", "hasDescription", "hasImage", "hasValue", "hasAsset", "hasKind"] as const).map((key) => {
+							{(["hasTitle", "hasExcerpt", "hasDescription", "hasImage", "hasValue", "hasAsset", "hasLink"] as const).map((key) => {
 								const isSupported = Boolean(resolvedType?.[key]);
 								if (!isSupported) return null;
 								return (

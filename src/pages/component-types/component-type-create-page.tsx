@@ -11,8 +11,8 @@ import {
 	Hash,
 	FileImage,
 	Image,
-	Tag,
 	Check,
+	Link2,
 } from "lucide-react";
 import { useCreateComponentType } from "@/hooks/use-component-type";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,8 @@ export default function ComponentTypeCreatePage() {
 	const [hasImage, setHasImage] = useState(false);
 	const [hasValue, setHasValue] = useState(false);
 	const [hasAsset, setHasAsset] = useState(false);
-	const [hasKind, setHasKind] = useState(false);
+	const [hasLink, setHasLink] = useState(false);
+	const [link, setLink] = useState("");
 	const [photoFile, setPhotoFile] = useState<File | null>(null);
 	const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
@@ -67,7 +68,8 @@ export default function ComponentTypeCreatePage() {
 			hasValue,
 			hasAsset,
 			photo: photoPayload,
-			hasKind,
+			hasLink,
+			...(hasLink && link.trim() && { link: link.trim() }),
 		};
 		createComponentType.mutate(payload, {
 			onSuccess: () => navigate("/component-types"),
@@ -173,34 +175,47 @@ export default function ComponentTypeCreatePage() {
 									{ key: "hasImage" as const, label: "Görsel", icon: Image, style: "border-emerald-500/40 bg-emerald-500/5 hover:bg-emerald-500/10", activeStyle: "ring-2 ring-emerald-500/50", iconStyle: "text-emerald-600 dark:text-emerald-400" },
 									{ key: "hasValue" as const, label: "Değer", icon: Hash, style: "border-cyan-500/40 bg-cyan-500/5 hover:bg-cyan-500/10", activeStyle: "ring-2 ring-cyan-500/50", iconStyle: "text-cyan-600 dark:text-cyan-400" },
 									{ key: "hasAsset" as const, label: "Medya", icon: FileImage, style: "border-violet-500/40 bg-violet-500/5 hover:bg-violet-500/10", activeStyle: "ring-2 ring-violet-500/50", iconStyle: "text-violet-600 dark:text-violet-400" },
-									{ key: "hasKind" as const, label: "Tür", icon: Tag, style: "border-rose-500/40 bg-rose-500/5 hover:bg-rose-500/10", activeStyle: "ring-2 ring-rose-500/50", iconStyle: "text-rose-600 dark:text-rose-400" },
+									{ key: "hasLink" as const, label: "Link", icon: Link2, style: "border-rose-500/40 bg-rose-500/5 hover:bg-rose-500/10", activeStyle: "ring-2 ring-rose-500/50", iconStyle: "text-rose-600 dark:text-rose-400" },
 								].map(({ key, label, icon: Icon, style, activeStyle, iconStyle }) => {
-									const isChecked = key === "hasTitle" ? hasTitle : key === "hasExcerpt" ? hasExcerpt : key === "hasDescription" ? hasDescription : key === "hasImage" ? hasImage : key === "hasValue" ? hasValue : key === "hasAsset" ? hasAsset : hasKind;
-									const setter = key === "hasTitle" ? setHasTitle : key === "hasExcerpt" ? setHasExcerpt : key === "hasDescription" ? setHasDescription : key === "hasImage" ? setHasImage : key === "hasValue" ? setHasValue : key === "hasAsset" ? setHasAsset : setHasKind;
+									const isChecked = key === "hasTitle" ? hasTitle : key === "hasExcerpt" ? hasExcerpt : key === "hasDescription" ? hasDescription : key === "hasImage" ? hasImage : key === "hasValue" ? hasValue : key === "hasAsset" ? hasAsset : hasLink;
+									const setter = key === "hasTitle" ? setHasTitle : key === "hasExcerpt" ? setHasExcerpt : key === "hasDescription" ? setHasDescription : key === "hasImage" ? setHasImage : key === "hasValue" ? setHasValue : key === "hasAsset" ? setHasAsset : setHasLink;
 									return (
-										<div
-											key={key}
-											className={`flex items-center justify-between gap-3 rounded-xl border-2 px-4 py-3.5 transition-all ${style} ${isChecked ? activeStyle : ""}`}
-										>
-											<div className="flex min-w-0 flex-1 items-center gap-3">
-												<div className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${isChecked ? "bg-white/80 dark:bg-black/20" : ""}`}>
-													<Icon className={`size-4 shrink-0 ${iconStyle}`} />
+										<div key={key} className="space-y-2">
+											<div
+												className={`flex items-center justify-between gap-3 rounded-xl border-2 px-4 py-3.5 transition-all ${style} ${isChecked ? activeStyle : ""}`}
+											>
+												<div className="flex min-w-0 flex-1 items-center gap-3">
+													<div className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${isChecked ? "bg-white/80 dark:bg-black/20" : ""}`}>
+														<Icon className={`size-4 shrink-0 ${iconStyle}`} />
+													</div>
+													<div className="min-w-0">
+														<span className="text-sm font-medium">{label}</span>
+														{isChecked && (
+															<span className="ml-2 inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+																<Check className="size-3" />
+																Aktif
+															</span>
+														)}
+													</div>
 												</div>
-												<div className="min-w-0">
-													<span className="text-sm font-medium">{label}</span>
-													{isChecked && (
-														<span className="ml-2 inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
-															<Check className="size-3" />
-															Aktif
-														</span>
-													)}
-												</div>
+												<Switch
+													checked={isChecked}
+													onCheckedChange={setter}
+													className="shrink-0 data-[state=checked]:bg-emerald-600"
+												/>
 											</div>
-											<Switch
-												checked={isChecked}
-												onCheckedChange={setter}
-												className="shrink-0 data-[state=checked]:bg-emerald-600"
-											/>
+											{key === "hasLink" && isChecked && (
+												<div className="rounded-xl border-2 border-rose-500/30 bg-rose-500/5 px-4 py-3">
+													<Input
+														id="kind-link"
+														type="url"
+														value={link}
+														onChange={(e) => setLink(e.target.value)}
+														placeholder="https://..."
+														className="h-9 text-sm"
+													/>
+												</div>
+											)}
 										</div>
 									);
 								})}

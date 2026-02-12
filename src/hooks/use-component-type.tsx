@@ -66,5 +66,6 @@ export const useComponentTypeById = (id: number) => {
 	return useAuthQuery<ComponentTypeResponse>({
 		queryKey: ["component-type", id],
 		queryFn: () => getComponentTypeById(id),
+		enabled: id > 0,
 	});
 };

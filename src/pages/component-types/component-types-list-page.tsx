@@ -87,7 +87,7 @@ function normalizeList(data: unknown): ComponentTypeResponse[] {
 			hasValue: Boolean(item.hasValue ?? item.has_value ?? false),
 			hasAsset: Boolean(item.hasAsset ?? item.has_asset ?? item.hasAssets ?? false),
 			photo: String(item.photo ?? item.Photo ?? ""),
-			hasKind: Boolean(item.hasKind ?? item.has_kind ?? false),
+			hasLink: Boolean(item.hasLink ?? item.has_link ?? item.hasKind ?? item.has_kind ?? false),
 		} satisfies ComponentTypeResponse;
 	});
 }
@@ -316,9 +316,9 @@ export default function ComponentTypesListPage() {
 															Medya
 														</Badge>
 													)}
-													{ct.hasKind && (
+													{ct.hasLink && (
 														<Badge variant="secondary" className="text-xs border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400">
-															Tür
+															Link
 														</Badge>
 													)}
 												</div>

@@ -7,7 +7,8 @@ export interface ComponentTypeRequest {
     hasValue: boolean;
     hasAsset: boolean;
     photo: string|File;
-    hasKind: boolean;
+    hasLink: boolean;
+
 }
 
 export interface ComponentTypeResponse {
@@ -20,5 +21,6 @@ export interface ComponentTypeResponse {
     hasValue: boolean;
     hasAsset: boolean;
     photo: string;
-    hasKind: boolean;
+    hasLink: boolean;
+
 }

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { translateFromTurkish } from "@/utils/translate";
 import { useComponentById, useUpdateComponent, useCreateComponentAsset, useDeleteComponentAsset } from "@/hooks/use-components";
-import { useComponentTypes } from "@/hooks/use-component-type";
+import { useComponentTypes, useComponentTypeById } from "@/hooks/use-component-type";
 import { useAssets } from "@/hooks/use-assets";
 import { useLanguages } from "@/hooks/use-languages";
 import { Button } from "@/components/ui/button";
@@ -84,7 +84,7 @@ function normalizeComponent(data: unknown): ComponentResponse | null {
 			hasValue: Boolean(typeObj.hasValue ?? typeObj.has_value ?? false),
 			hasAsset: Boolean(typeObj.hasAsset ?? typeObj.has_asset ?? typeObj.hasAssets ?? false),
 			photo: String(typeObj.photo ?? typeObj.Photo ?? ""),
-			hasKind: Boolean(typeObj.hasKind ?? typeObj.has_kind ?? false),
+			hasLink: Boolean(typeObj.hasLink ?? typeObj.has_link ?? typeObj.hasKind ?? typeObj.has_kind ?? false),
 		},
 		value: String(item.value ?? item.Value ?? ""),
 		link: String(item.link ?? item.Link ?? ""),
@@ -106,6 +106,8 @@ export default function ComponentEditPage() {
 	const assetFileInputRef = useRef<HTMLInputElement>(null);
 
 	const { data: typesData } = useComponentTypes("", 0, 100, "type,asc");
+	const selectedTypeIdForDetail = typeId !== "" && Number(typeId) > 0 ? Number(typeId) : 0;
+	const { data: selectedTypeDetail } = useComponentTypeById(selectedTypeIdForDetail);
 
 	useEffect(() => {
 		queryClient.invalidateQueries({ queryKey: ["component-types"] });
@@ -146,7 +148,8 @@ export default function ComponentEditPage() {
 			hasImage: Boolean(x.hasImage ?? x.has_image ?? false),
 			hasValue: Boolean(x.hasValue ?? x.has_value ?? false),
 			hasAsset: Boolean(x.hasAsset ?? x.has_asset ?? x.hasAssets ?? false),
-			hasKind: Boolean(x.hasKind ?? x.has_kind ?? false),
+			hasLink: Boolean(x.hasLink ?? x.has_link ?? x.hasKind ?? x.has_kind ?? false),
+			link: String(x.link ?? x.Link ?? x.kind ?? x.Kind ?? ""),
 		}));
 	}, [typesData]);
 
@@ -154,6 +157,7 @@ export default function ComponentEditPage() {
 		const fromList = componentTypes.find((ct) => ct.id === typeId);
 		if (fromList) return fromList;
 		if (comp?.type) {
+			const ct = comp.type as { link?: string };
 			return {
 				id: comp.type.id,
 				type: comp.type.type,
@@ -163,11 +167,30 @@ export default function ComponentEditPage() {
 				hasImage: comp.type.hasImage,
 				hasValue: comp.type.hasValue,
 				hasAsset: comp.type.hasAsset,
-				hasKind: comp.type.hasKind,
+				hasLink: comp.type.hasLink,
+				link: ct?.link ?? "",
 			};
 		}
 		return undefined;
 	}, [componentTypes, typeId, comp?.type]);
+
+	// Seçilen bileşen tipinin link değerini detay API'sinden çekip Link alanına yaz (kullanıcı tipi değiştirdiyse)
+	const typeLinkFromDetail = useMemo(() => {
+		if (!selectedTypeDetail || typeof selectedTypeDetail !== "object") return "";
+		const t = selectedTypeDetail as Record<string, unknown>;
+		return String(t.link ?? t.Link ?? t.kind ?? t.Kind ?? "").trim();
+	}, [selectedTypeDetail]);
+	const typeHasLinkFromDetail = useMemo(() => {
+		if (!selectedTypeDetail || typeof selectedTypeDetail !== "object") return false;
+		const t = selectedTypeDetail as Record<string, unknown>;
+		return Boolean(t.hasLink ?? t.has_link ?? t.hasKind ?? t.has_kind ?? false);
+	}, [selectedTypeDetail]);
+	useEffect(() => {
+		if (comp && typeId !== comp.type?.id && selectedTypeDetail) {
+			if (typeHasLinkFromDetail) setLink(typeLinkFromDetail);
+			else setLink("");
+		}
+	}, [typeId, comp?.type?.id, selectedTypeDetail, typeHasLinkFromDetail, typeLinkFromDetail]);
 
 	const languages = useMemo(() => {
 		const raw = languagesData as Record<string, unknown> | undefined;
@@ -467,31 +490,35 @@ export default function ComponentEditPage() {
 								{selectedType && (
 									<div className="space-y-4 rounded-xl border border-border/60 bg-muted/10 p-4">
 										<p className="text-xs text-muted-foreground">Seçilen tipe göre alanlar:</p>
-										<div className="space-y-2">
-											<Label htmlFor="value" className="flex items-center gap-2 text-sm">
-												<Hash className="size-4" />
-												Değer (value)
-											</Label>
-											<Input
-												id="value"
-												value={value}
-												onChange={(e) => setValue(e.target.value)}
-												placeholder="Bileşen değeri"
-											/>
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="link" className="flex items-center gap-2 text-sm">
-												<Link2 className="size-4" />
-												Link
-											</Label>
-											<Input
-												id="link"
-												type="url"
-												value={link}
-												onChange={(e) => setLink(e.target.value)}
-												placeholder="https://..."
-											/>
-										</div>
+										{selectedType.hasValue && (
+											<div className="space-y-2">
+												<Label htmlFor="value" className="flex items-center gap-2 text-sm">
+													<Hash className="size-4" />
+													Değer (value)
+												</Label>
+												<Input
+													id="value"
+													value={value}
+													onChange={(e) => setValue(e.target.value)}
+													placeholder="Bileşen değeri"
+												/>
+											</div>
+										)}
+										{selectedType.hasLink && (
+											<div className="space-y-2">
+												<Label htmlFor="link" className="flex items-center gap-2 text-sm">
+													<Link2 className="size-4" />
+													Link
+												</Label>
+												<Input
+													id="link"
+													type="url"
+													value={link}
+													onChange={(e) => setLink(e.target.value)}
+													placeholder="https://..."
+												/>
+											</div>
+										)}
 									</div>
 								)}
 							</div>
