@@ -50,7 +50,13 @@ import PagesListPage from "./pages/pages/pages-list-page";
 import PageCreatePage from "./pages/pages/page-create-page";
 import PageDetailPage from "./pages/pages/page-detail-page";
 import PageEditPage from "./pages/pages/page-edit-page";
-
+import BackupsListPage from "./pages/backups/backups-list-page";
+import NotificationsListPage from "./pages/notifications/notifications-list-page";
+import NotificationCreatePage from "./pages/notifications/notification-create-page";
+import NotificationDetailPage from "./pages/notifications/notification-detail-page";
+import NotificationEditPage from "./pages/notifications/notification-edit-page";
+import NotificationSubscribersListPage from "./pages/notification-subscribers/notification-subscribers-list-page";
+import NotificationSubscriberCreatePage from "./pages/notification-subscribers/notification-subscriber-create-page";
 function App() {
 	return (
 		<QueryProvider>
@@ -106,6 +112,13 @@ function App() {
 								<Route path="/pages/create" element={<PageCreatePage />} />
 								<Route path="/pages/:id" element={<PageDetailPage />} />
 								<Route path="/pages/:id/edit" element={<PageEditPage />} />
+								<Route path="/backups" element={<BackupsListPage />} />
+								<Route path="/notifications" element={<NotificationsListPage />} />
+								<Route path="/notifications/create" element={<NotificationCreatePage />} />
+								<Route path="/notifications/:id" element={<NotificationDetailPage />} />
+								<Route path="/notifications/:id/edit" element={<NotificationEditPage />} />
+								<Route path="/notification-subscribers" element={<NotificationSubscribersListPage />} />
+								<Route path="/notification-subscribers/create" element={<NotificationSubscriberCreatePage />} />
 							</Route>
 						</Route>
 					</Routes>

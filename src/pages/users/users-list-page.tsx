@@ -7,8 +7,6 @@ import {
 	Pencil,
 	Trash2,
 	Eye,
-	ChevronLeft,
-	ChevronRight,
 	UserPlus,
 } from "lucide-react";
 import { useUsersQuery, useDeleteUser } from "@/hooks/use-user";
@@ -37,6 +35,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
+import { ListPagination } from "@/components/list-pagination";
 import type { UserResponse } from "@/types/user.types";
 
 const SEARCH_DEBOUNCE_MS = 400;
@@ -142,11 +141,9 @@ export default function UsersListPage() {
 	// API bazen snake_case (total_elements, total_pages) döndürebilir; her iki biçimi okuyoruz
 	const raw = data as Record<string, unknown> | undefined;
 	const totalElements = raw ? Number(raw.totalElements ?? raw.total_elements ?? (Array.isArray(raw.content) ? raw.content.length : 0)) : 0;
-	const totalPages = raw ? Number(raw.totalPages ?? raw.total_pages ?? 1) : 0;
+	const totalPages =
+		totalElements > 0 ? Math.ceil(totalElements / size) || 1 : 1;
 	const content = data?.content ?? [];
-	const hasNext = page < totalPages - 1;
-	const hasPrev = page > 0;
-
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -293,36 +290,14 @@ export default function UsersListPage() {
 									))}
 								</TableBody>
 							</Table>
-							<div className="flex items-center justify-between gap-4 pt-4 border-t border-border/60 mt-4">
-								<p className="text-sm text-muted-foreground">
-									Toplam {totalElements} kullanıcı
-								</p>
-								<div className="flex items-center gap-2">
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => setPageInUrl(Math.max(0, page - 1))}
-										disabled={!hasPrev}
-									>
-										<ChevronLeft className="size-4" />
-										Önceki
-									</Button>
-									<span className="text-sm text-muted-foreground px-2">
-										Sayfa {page + 1} / {totalPages || 1}
-									</span>
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() =>
-											setPageInUrl(Math.min(totalPages - 1, page + 1))
-										}
-										disabled={!hasNext}
-									>
-										Sonraki
-										<ChevronRight className="size-4" />
-									</Button>
-								</div>
-							</div>
+							<ListPagination
+								page={page}
+								totalPages={totalPages}
+								totalElements={totalElements}
+								onPageChange={setPageInUrl}
+								label={`Toplam ${totalElements} kullanıcı`}
+								className="pt-4 mt-4"
+							/>
 						</>
 					)}
 				</CardContent>

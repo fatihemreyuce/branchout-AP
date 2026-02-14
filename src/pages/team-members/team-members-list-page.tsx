@@ -6,8 +6,6 @@ import {
 	Pencil,
 	Trash2,
 	Eye,
-	ChevronLeft,
-	ChevronRight,
 	Search,
 	UserCircle,
 } from "lucide-react";
@@ -38,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
+import { ListPagination } from "@/components/list-pagination";
 import type { TeamMemberResponse } from "@/types/team.members.types";
 
 const SORT_OPTIONS = [
@@ -112,6 +111,7 @@ export default function TeamMembersListPage() {
 
 	// Yazarken otomatik arama (debounce 400ms)
 	useEffect(() => {
+		if (searchInput === search) return;
 		const t = setTimeout(() => {
 			setSearchParams((prev) => {
 				const next = new URLSearchParams(prev);
@@ -122,7 +122,7 @@ export default function TeamMembersListPage() {
 			});
 		}, 400);
 		return () => clearTimeout(t);
-	}, [searchInput]);
+	}, [searchInput, search, setSearchParams]);
 
 	const { data, isLoading, isError } = useTeamMembers(search, page, size, sort);
 	const deleteTeamMember = useDeleteTeamMember();
@@ -142,13 +142,8 @@ export default function TeamMembersListPage() {
 		raw && typeof raw === "object" && !Array.isArray(data)
 			? Number(raw.totalElements ?? raw.total_elements ?? content.length)
 			: content.length;
-	const totalPagesFromApi = raw ? Number(raw.totalPages ?? raw.total_pages ?? 0) : 0;
 	const totalPages =
-		totalElements > 0
-			? totalPagesFromApi > 0
-				? totalPagesFromApi
-				: Math.ceil(totalElements / size) || 1
-			: 1;
+		totalElements > 0 ? Math.ceil(totalElements / size) || 1 : 1;
 
 	// API paginates; content is already the current page items
 
@@ -163,8 +158,6 @@ export default function TeamMembersListPage() {
 		setSearchParams((prev) => updateSearchParams(prev, { sort: value, page: 0 }));
 	const setSizeInUrl = (value: number) =>
 		setSearchParams((prev) => updateSearchParams(prev, { size: value, page: 0 }));
-	const hasNext = page < totalPages - 1;
-	const hasPrev = page > 0;
 	const setPageInUrl = (newPage: number) =>
 		setSearchParams((prev) => updateSearchParams(prev, { page: newPage }));
 
@@ -342,34 +335,13 @@ export default function TeamMembersListPage() {
 									))}
 								</TableBody>
 							</Table>
-							<div className="flex items-center justify-between gap-4 px-6 py-4 border-t border-border/60 bg-muted/10">
-								<p className="text-sm text-muted-foreground">
-									Toplam {totalElements} ekip üyesi
-								</p>
-								<div className="flex items-center gap-2">
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => setPageInUrl(Math.max(0, page - 1))}
-										disabled={!hasPrev}
-									>
-										<ChevronLeft className="size-4" />
-										Önceki
-									</Button>
-									<span className="text-sm text-muted-foreground px-2">
-										Sayfa {page + 1} / {totalPages || 1}
-									</span>
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => setPageInUrl(Math.min(totalPages - 1, page + 1))}
-										disabled={!hasNext}
-									>
-										Sonraki
-										<ChevronRight className="size-4" />
-									</Button>
-								</div>
-							</div>
+							<ListPagination
+								page={page}
+								totalPages={totalPages}
+								totalElements={totalElements}
+								onPageChange={setPageInUrl}
+								label={`Toplam ${totalElements} ekip üyesi`}
+							/>
 						</>
 					)}
 				</CardContent>

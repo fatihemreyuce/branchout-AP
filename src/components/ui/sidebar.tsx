@@ -20,6 +20,9 @@ import {
 	Puzzle,
 	FileType,
 	FileText,
+	Database,
+	Bell,
+	Mail,
 } from "lucide-react";
 
 interface NavItem {
@@ -100,6 +103,24 @@ const navigationItems: NavItem[] = [
 		to: "/pages",
 		label: "Sayfalar",
 		icon: FileText,
+		end: false,
+	},
+	{
+		to: "/backups",
+		label: "Yedekler",
+		icon: Database,
+		end: false,
+	},
+	{
+		to: "/notifications",
+		label: "Bildirimler",
+		icon: Bell,
+		end: false,
+	},
+	{
+		to: "/notification-subscribers",
+		label: "Bildirim Aboneleri",
+		icon: Mail,
 		end: false,
 	},
 ];

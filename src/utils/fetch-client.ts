@@ -74,7 +74,18 @@ export const fetchClient = async <T, U>(
       return fetchClient(url, options);
     }
 
-    throw new Error("Failed to fetch data");
+    let message = "Failed to fetch data";
+    try {
+      const contentType = response.headers.get("content-type");
+      if (contentType?.includes("application/json")) {
+        const body = await response.json();
+        const msg = body?.message ?? body?.error ?? body?.msg;
+        if (typeof msg === "string") message = msg;
+      }
+    } catch {
+      // ignore parse errors
+    }
+    throw new Error(message);
   }
 
   const contentType = response.headers.get("content-type");

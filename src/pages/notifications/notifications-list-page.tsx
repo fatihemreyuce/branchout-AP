@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import {
-	Languages,
-	Plus,
-	Pencil,
-	Trash2,
-	Eye,
-	BookOpen,
-} from "lucide-react";
-import { useLanguages, useDeleteLanguage } from "@/hooks/use-languages";
+import { Bell, Plus, Pencil, Trash2, Eye, Send } from "lucide-react";
+import { useNotifications, useDeleteNotification, useSendNotification } from "@/hooks/use-notifications";
 import { Button } from "@/components/ui/button";
 import {
 	Table,
@@ -34,13 +27,13 @@ import {
 } from "@/components/ui/select";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
 import { ListPagination } from "@/components/list-pagination";
-import type { LanguageResponse } from "@/types/languages.types";
+import type { NotificationResponse } from "@/types/notifications.types";
 
 const SORT_OPTIONS = [
-	{ value: "code,asc", label: "Kod (A-Z)" },
-	{ value: "code,desc", label: "Kod (Z-A)" },
 	{ value: "id,asc", label: "ID (artan)" },
 	{ value: "id,desc", label: "ID (azalan)" },
+	{ value: "title,asc", label: "Başlık (A-Z)" },
+	{ value: "title,desc", label: "Başlık (Z-A)" },
 ];
 
 const PAGE_SIZES = [5, 10, 20, 50];
@@ -59,19 +52,44 @@ function updateSearchParams(
 	return next;
 }
 
-export default function LanguagesListPage() {
+/** API snake_case dönebilir */
+function normalizeNotificationsList(data: unknown): NotificationResponse[] {
+	const raw = data as Record<string, unknown> | undefined;
+	const arr = raw?.content ?? raw?.data;
+	const list = Array.isArray(arr) ? arr : [];
+	return list.map((x) => {
+		const item = typeof x === "object" && x !== null ? (x as Record<string, unknown>) : {};
+		return {
+			id: Number(item.id ?? 0),
+			title: String(item.title ?? item.Title ?? ""),
+			content: String(item.content ?? item.Content ?? ""),
+		} satisfies NotificationResponse;
+	});
+}
+
+export default function NotificationsListPage() {
 	const [searchParams, setSearchParams] = useSearchParams();
-	const sort = searchParams.get("sort") ?? "code,asc";
+	const sort = searchParams.get("sort") ?? "id,asc";
 	const page = Math.max(0, Number(searchParams.get("page")) || 0);
 	const size = Number(searchParams.get("size")) || 10;
 
-	const [deleteTarget, setDeleteTarget] = useState<LanguageResponse | null>(null);
-	const { data, isLoading, isError } = useLanguages(page, size, sort);
-	const deleteLanguage = useDeleteLanguage();
+	const [deleteTarget, setDeleteTarget] = useState<NotificationResponse | null>(null);
+	const { data, isLoading, isError } = useNotifications(page, size, sort);
+	const deleteNotification = useDeleteNotification();
+	const sendNotification = useSendNotification();
+
+	const content = normalizeNotificationsList(data ?? {});
+	const raw = data as Record<string, unknown> | undefined;
+	const totalElements =
+		raw && typeof raw === "object" && !Array.isArray(data)
+			? Number(raw.totalElements ?? raw.total_elements ?? content.length)
+			: content.length;
+	const totalPages =
+		totalElements > 0 ? Math.ceil(totalElements / size) || 1 : 1;
 
 	const handleDelete = () => {
 		if (!deleteTarget) return;
-		deleteLanguage.mutate(deleteTarget.id, {
+		deleteNotification.mutate(deleteTarget.id, {
 			onSuccess: () => setDeleteTarget(null),
 		});
 	};
@@ -83,37 +101,31 @@ export default function LanguagesListPage() {
 	const setPageInUrl = (newPage: number) =>
 		setSearchParams((prev) => updateSearchParams(prev, { page: newPage }));
 
-	// API bazen snake_case (total_elements, total_pages) döndürebilir; her iki biçimi okuyoruz
-	const raw = data as Record<string, unknown> | undefined;
-	const totalElements = raw ? Number(raw.totalElements ?? raw.total_elements ?? (Array.isArray(raw.content) ? raw.content.length : 0)) : 0;
-	const totalPages =
-		totalElements > 0 ? Math.ceil(totalElements / size) || 1 : 1;
-	const content = data?.content ?? [];
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-						<Languages className="size-6 text-brand" />
-						Diller
+						<Bell className="size-6 text-brand" />
+						Bildirimler
 					</h1>
 					<p className="text-muted-foreground text-sm mt-1">
-						Tüm dilleri listele, oluştur ve yönet
+						Bildirimleri listele, oluştur ve yönet
 					</p>
 				</div>
 				<Button asChild className="gap-2 bg-brand text-brand-foreground hover:bg-brand/90">
-					<Link to="/languages/create" className="gap-2">
-						<BookOpen className="size-4" />
-						Yeni Dil
+					<Link to="/notifications/create" className="gap-2">
+						<Plus className="size-4" />
+						Yeni Bildirim
 					</Link>
 				</Button>
 			</div>
 
-			<Card>
-				<CardHeader className="pb-4">
-					<CardTitle>Dil listesi</CardTitle>
+			<Card className="border-border/60 shadow-sm overflow-hidden">
+				<CardHeader className="pb-4 border-b border-border/60 bg-muted/20">
+					<CardTitle className="text-lg">Bildirim listesi</CardTitle>
 					<CardDescription>
-						Sıralama ve sayfalama ile filtreleyin (filtreler URL'de saklanır)
+						Sıralama ve sayfalama ile filtreleyin (filtreler URL&apos;de saklanır)
 					</CardDescription>
 					<div className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center">
 						<Select value={sort} onValueChange={setSortInUrl}>
@@ -142,7 +154,7 @@ export default function LanguagesListPage() {
 						</Select>
 					</div>
 				</CardHeader>
-				<CardContent>
+				<CardContent className="p-0">
 					{isLoading ? (
 						<div className="flex items-center justify-center py-12 text-muted-foreground">
 							Yükleniyor...
@@ -153,12 +165,12 @@ export default function LanguagesListPage() {
 						</div>
 					) : content.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-2">
-							<Languages className="size-10 opacity-50 text-brand" />
-							<p>Henüz dil yok.</p>
-							<Button asChild variant="outline" size="sm">
-								<Link to="/languages/create" className="gap-2">
+							<Bell className="size-10 opacity-50 text-brand" />
+							<p>Henüz bildirim yok.</p>
+							<Button asChild variant="outline" size="sm" className="border-brand-outline text-brand hover:bg-brand-muted">
+								<Link to="/notifications/create" className="gap-2">
 									<Plus className="size-4" />
-									İlk dili oluştur
+									İlk bildirimi oluştur
 								</Link>
 							</Button>
 						</div>
@@ -168,35 +180,65 @@ export default function LanguagesListPage() {
 								<TableHeader>
 									<TableRow>
 										<TableHead className="w-[80px]">ID</TableHead>
-										<TableHead>Kod</TableHead>
-										<TableHead className="w-[140px] text-right">
-											İşlemler
-										</TableHead>
+										<TableHead>Başlık</TableHead>
+										<TableHead className="max-w-[300px]">İçerik</TableHead>
+										<TableHead className="w-[170px] text-right">İşlemler</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{content.map((lang) => (
-										<TableRow key={lang.id}>
+									{content.map((notification) => (
+										<TableRow key={notification.id} className="group">
 											<TableCell className="font-mono text-muted-foreground">
-												{lang.id}
+												{notification.id}
 											</TableCell>
-											<TableCell className="font-medium">{lang.code}</TableCell>
+											<TableCell className="font-medium">{notification.title || "—"}</TableCell>
+											<TableCell className="text-muted-foreground truncate max-w-[300px]">
+												{notification.content ? (
+													<span title={notification.content}>
+														{notification.content.length > 60
+															? `${notification.content.slice(0, 60)}...`
+															: notification.content}
+													</span>
+												) : (
+													"—"
+												)}
+											</TableCell>
 											<TableCell className="text-right">
 												<div className="flex items-center justify-end gap-1 w-fit ml-auto">
-													<Button variant="ghost" size="icon" asChild className="text-blue-600 hover:text-blue-700 hover:bg-blue-500/10">
-														<Link to={`/languages/${lang.id}`} title="Detay">
+													<Button
+														variant="ghost"
+														size="icon"
+														onClick={() => sendNotification.mutate(notification.id)}
+														disabled={sendNotification.isPending}
+														className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-500/10"
+														title="Gönder"
+													>
+														<Send className="size-4" />
+													</Button>
+													<Button
+														variant="ghost"
+														size="icon"
+														asChild
+														className="text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
+													>
+														<Link to={`/notifications/${notification.id}`} title="Detay">
 															<Eye className="size-4" />
 														</Link>
 													</Button>
-													<Button variant="ghost" size="icon" asChild className="text-amber-600 hover:text-amber-700 hover:bg-amber-500/10">
-														<Link to={`/languages/${lang.id}/edit`} title="Düzenle">
+													<Button
+														variant="ghost"
+														size="icon"
+														asChild
+														className="text-amber-600 hover:text-amber-700 hover:bg-amber-500/10"
+													>
+														<Link to={`/notifications/${notification.id}/edit`} title="Düzenle">
 															<Pencil className="size-4" />
 														</Link>
 													</Button>
 													<Button
 														variant="ghost"
 														size="icon"
-														onClick={() => setDeleteTarget(lang)}
+														onClick={() => setDeleteTarget(notification)}
 														className="text-red-600 hover:text-red-700 hover:bg-red-500/10"
 														title="Sil"
 													>
@@ -213,8 +255,7 @@ export default function LanguagesListPage() {
 								totalPages={totalPages}
 								totalElements={totalElements}
 								onPageChange={setPageInUrl}
-								label={`Toplam ${totalElements} dil`}
-								className="pt-4 mt-4"
+								label={`Toplam ${totalElements} bildirim`}
 							/>
 						</>
 					)}
@@ -224,18 +265,18 @@ export default function LanguagesListPage() {
 			<DeleteConfirmDialog
 				open={!!deleteTarget}
 				onOpenChange={(open) => !open && setDeleteTarget(null)}
-				title="Dili sil"
+				title="Bildirimi sil"
 				description={
 					deleteTarget
-						? `"${deleteTarget.code}" dilini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`
+						? `ID ${deleteTarget.id} bildirimini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`
 						: undefined
 				}
-				confirmValue={deleteTarget?.code}
-				confirmLabel="Silmek için dil kodunu yazın"
+				confirmValue={deleteTarget ? String(deleteTarget.id) : undefined}
+				confirmLabel="Silmek için ID'yi yazın"
 				confirmText="Sil"
 				cancelText="Vazgeç"
 				onConfirm={handleDelete}
-				loading={deleteLanguage.isPending}
+				loading={deleteNotification.isPending}
 			/>
 		</div>
 	);

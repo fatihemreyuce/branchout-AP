@@ -6,8 +6,6 @@ import {
 	Pencil,
 	Trash2,
 	Eye,
-	ChevronLeft,
-	ChevronRight,
 	Search,
 	Link2,
 	Type,
@@ -39,6 +37,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { DeleteConfirmDialog } from "@/components/ui/delete-confirm-dialog";
+import { ListPagination } from "@/components/list-pagination";
 import type { ComponentResponse } from "@/types/components.types";
 
 const SEARCH_DEBOUNCE_MS = 400;
@@ -144,13 +143,12 @@ export default function ComponentsListPage() {
 
 	const content = useMemo(() => normalizeList(data), [data]);
 	const raw = data as Record<string, unknown> | undefined;
-	const totalElements = raw
-		? Number(raw.totalElements ?? raw.total_elements ?? content.length)
-		: 0;
-	const totalPages = raw ? Number(raw.totalPages ?? raw.total_pages ?? 1) : 1;
-	const hasNext = page < totalPages - 1;
-	const hasPrev = page > 0;
-
+	const totalElements =
+		raw && typeof raw === "object" && !Array.isArray(data)
+			? Number(raw.totalElements ?? raw.total_elements ?? content.length)
+			: content.length;
+	const totalPages =
+		totalElements > 0 ? Math.ceil(totalElements / size) || 1 : 1;
 	const handleDelete = () => {
 		if (!deleteTarget) return;
 		deleteComponent.mutate(deleteTarget.id, {
@@ -344,34 +342,13 @@ export default function ComponentsListPage() {
 									))}
 								</TableBody>
 							</Table>
-							<div className="flex items-center justify-between gap-4 px-6 py-4 border-t border-border/60 bg-muted/10">
-								<p className="text-sm text-muted-foreground">
-									Toplam {totalElements} bileşen
-								</p>
-								<div className="flex items-center gap-2">
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => setPageInUrl(Math.max(0, page - 1))}
-										disabled={!hasPrev}
-									>
-										<ChevronLeft className="size-4" />
-										Önceki
-									</Button>
-									<span className="text-sm text-muted-foreground px-2">
-										Sayfa {page + 1} / {totalPages || 1}
-									</span>
-									<Button
-										variant="outline"
-										size="sm"
-										onClick={() => setPageInUrl(Math.min(totalPages - 1, page + 1))}
-										disabled={!hasNext}
-									>
-										Sonraki
-										<ChevronRight className="size-4" />
-									</Button>
-								</div>
-							</div>
+							<ListPagination
+								page={page}
+								totalPages={totalPages}
+								totalElements={totalElements}
+								onPageChange={setPageInUrl}
+								label={`Toplam ${totalElements} bileşen`}
+							/>
 						</>
 					)}
 				</CardContent>
